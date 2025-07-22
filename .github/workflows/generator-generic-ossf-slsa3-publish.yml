@@ -64,3 +64,9 @@ jobs:
     with:
       base64-subjects: "${{ needs.build.outputs.digests }}"
       upload-assets: true # Optional: Upload to a new release
+# --- Nossos Segredos (Ignorar Sempre) ---
+/backend/private_data/
+/backend/private_memory/
+/backend/memorias_da_pousada.jsonl
+/backend/*.key
+/backend/*.json
