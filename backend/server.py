@@ -172,4 +172,4 @@ if __name__ == '__main__':
     bot_thread = threading.Thread(target=bot.start)
     bot_thread.daemon = True
     bot_thread.start()
-    socketio.run(app, debug=False, port=5000, allow_unsafe_werkzeug=True)
+    socketio.run(app, debug=False, host='0.0.0.0', port=5000, allow_unsafe_werkzeug=True)
