@@ -25,7 +25,7 @@ const PontoDeEncontroPage = () => {
   // Efeito que roda uma vez para conectar ao servidor
   useEffect(() => {
     // Conecta ao nosso backend Python na porta 5000
-    const socket = io('http://127.0.0.1:5000');
+    const socket = io('https://sosplanet-backend.onrender.com');
     socketRef.current = socket;
 
     socket.on('connect', () => {

@@ -24,7 +24,7 @@ const MemoryForm: React.FC<MemoryFormProps> = ({ onMemorySaved }) => {
     event.preventDefault();
     const formData = { tipo: logType, titulo_resumo: title, descricao_detalhada: description, autor_origem: author, tags: tags.split(',').map(tag => tag.trim())};
     try {
-      const response = await fetch('http://127.0.0.1:5000/api/save_memory', {
+      const response = await fetch('https://sosplanet-backend.onrender.com/api/save_memory', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
