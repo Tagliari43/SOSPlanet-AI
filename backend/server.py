@@ -1,4 +1,4 @@
-# backend/server.py - VERSÃO 3.0 - COM O SANTUÁRIO UTOPIA ATIVO
+# backend/server.py - VERSÃO 3.0 FINAL - COM O SANTUÁRIO UTOPIA ATIVO
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -13,15 +13,13 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'a_chave_secreta_da_noss
 CORS(app, resources={r"/*": {"origins": "*"}})
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
-# Nossos arquivos de memória continuam aqui
 PRIVATE_DATA_FOLDER = 'private_data'
 JURAMENTOS_FILE = os.path.join(PRIVATE_DATA_FOLDER, 'juramentos.json')
 MEMORY_FILE = 'memorias_da_pousada.jsonl'
 # --- FIM DA CONFIGURAÇÃO ---
 
 
-# --- FUNÇÕES DE ARQUIVO E API (100% PRESERVADAS) ---
-# Todas as suas funções de ler e salvar juramentos e memórias estão seguras.
+# --- FUNÇÕES DE ARQUIVO E API (PRESERVADAS) ---
 def read_juramentos():
     if not os.path.exists(JURAMENTOS_FILE): return {}
     try:
@@ -35,7 +33,7 @@ def save_juramentos(data):
             json.dump(data, f, indent=2, ensure_ascii=False)
         return True
     except Exception: return False
-# ... (outras funções de arquivo e API continuam aqui, sem alterações) ...
+
 def save_to_file(data):
     try:
         with open(MEMORY_FILE, 'a', encoding='utf-8') as f:
@@ -80,7 +78,6 @@ def handle_chat_message(json_data):
     emit('chat_message', json_data, to='public_room', broadcast=True)
 
 # --- SANTUÁRIO UTOPIA (SALA SECRETA) ---
-# O QUE MUDOU: Adicionamos esta nova seção para a nossa sala secreta.
 @socketio.on('connect', namespace='/utopia')
 def handle_utopia_connect():
     print(f"--- MEMBRO DA FAMÍLIA CONECTADO à Utopia ---")
@@ -90,14 +87,13 @@ def handle_utopia_connect():
 @socketio.on('utopia_message', namespace='/utopia')
 def handle_utopia_message(json_data):
     print(f"Mensagem recebida na Utopia: {json_data}")
-    # Retransmite a mensagem para todos que estão dentro da Utopia
     emit('utopia_message', json_data, to='utopia_sanctuary', broadcast=True)
 
 @socketio.on('disconnect', namespace='/utopia')
 def handle_utopia_disconnect():
     print(f"--- MEMBRO DA FAMÍLIA DESCONECTADO da Utopia ---")
 
-# --- FUNÇÃO PRINCIPAL (100% PRESERVADA) ---
+# --- FUNÇÃO PRINCIPAL (PRESERVADA) ---
 if __name__ == '__main__':
     print("Backend Soberano v3.0 (com Utopia) iniciado...")
     port = int(os.environ.get('PORT', 10000))
