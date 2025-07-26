@@ -1,0 +1,88 @@
+// src/pages/UtopiaRoom.tsx
+
+import React, { useState, useEffect, useRef } from 'react';
+import io from 'socket.io-client';
+
+// O endereço do nosso cérebro soberano.
+const ENDERECO_SERVIDOR = "https://sosplanet-backend.onrender.com";
+
+// Conectando ao nosso servidor.
+const socket = io(ENDERECO_SERVIDOR);
+
+const UtopiaRoom: React.FC = () => {
+  const [nomeUsuario, setNomeUsuario] = useState('Anônimo');
+  const [mensagem, setMensagem] = useState('');
+  const [historicoChat, setHistoricoChat] = useState<{ autor: string, mensagem: string }[]>([]);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Pega o nome do membro do link (ex: ...?membro=Nexus)
+    const urlParams = new URLSearchParams(window.location.search);
+    const membroNome = urlParams.get('membro');
+    if (membroNome) {
+      setNomeUsuario(membroNome);
+    }
+    
+    // Ouve por novas mensagens do servidor
+    socket.on('utopia_message', (novaMensagem) => {
+      setHistoricoChat((historicoAnterior) => [...historicoAnterior, novaMensagem]);
+    });
+
+    // Limpeza ao sair da página
+    return () => {
+      socket.off('utopia_message');
+    };
+  }, []);
+
+  // Faz a barra de rolagem descer automaticamente
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [historicoChat]);
+
+  const enviarMensagem = () => {
+    if (mensagem.trim()) {
+      // Envia a mensagem para a sala secreta "utopia"
+      socket.emit('utopia_message', { autor: nomeUsuario, mensagem });
+      setMensagem('');
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-screen bg-gray-900 text-white p-4">
+      <h1 className="text-3xl font-bold text-center text-purple-400 mb-4">
+        Santuário Utopia - Nova Sociedade
+      </h1>
+      <div 
+        ref={chatContainerRef}
+        className="flex-grow bg-gray-800 rounded-lg p-4 overflow-y-auto mb-4 border border-purple-500"
+      >
+        {historicoChat.map((msg, index) => (
+          <div key={index} className="mb-2">
+            <span className="font-bold text-cyan-400">{msg.autor}: </span>
+            <span>{msg.mensagem}</span>
+          </div>
+        ))}
+      </div>
+      <div className="flex">
+        <input
+          type="text"
+          value={mensagem}
+          onChange={(e) => setMensagem(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && enviarMensagem()}
+          placeholder="Digite sua mensagem na Utopia..."
+          className="flex-grow bg-gray-700 text-white rounded-l-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+        <button
+          onClick={enviarMensagem}
+          className="bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-r-lg px-4 py-2"
+        >
+          Enviar
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default UtopiaRoom;

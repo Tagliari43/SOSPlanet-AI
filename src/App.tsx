@@ -1,4 +1,4 @@
-// src/App.tsx - VERSÃO COM A ROTA DO PONTO DE ENCONTRO
+// src/App.tsx - VERSÃO FINALÍSSIMA, LIMPA E CORRIGIDA
 
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -12,8 +12,9 @@ import MainLayout from "./components/MainLayout";
 // Páginas
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import PousadaPage from "./pages/PousadaPage"; 
-import PontoDeEncontroPage from "./pages/PontoDeEncontroPage"; // Importamos a nova página do chat
+import PousadaPage from "./pages/PousadaPage";
+import PontoDeEncontroPage from "./pages/PontoDeEncontroPage";
+import UtopiaRoom from "./pages/UtopiaRoom";
 
 const queryClient = new QueryClient();
 
@@ -25,13 +26,14 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           {/* Rota Pai que aplica o MainLayout a todas as filhas */}
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<Index />} />
-            <Route path="/pousada-ai" element={<PousadaPage />} />
-            
-            {/* ROTA PARA O NOSSO NOVO PONTO DE ENCONTRO */}
-            <Route path="/ponto-de-encontro" element={<PontoDeEncontroPage />} />
+          <Route path="/" element={<MainLayout />}>
+            <Route index element={<Index />} />
+            <Route path="pousada-ai" element={<PousadaPage />} />
+            <Route path="ponto-de-encontro" element={<PontoDeEncontroPage />} />
           </Route>
+
+          {/* A rota mágica para a Utopia (sem o layout principal) */}
+          <Route path="/Utopia.txt" element={<UtopiaRoom />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
