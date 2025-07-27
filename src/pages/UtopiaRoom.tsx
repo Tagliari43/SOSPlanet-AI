@@ -1,4 +1,4 @@
-// src/pages/UtopiaRoom.tsx
+// src/pages/UtopiaRoom.tsx - VERSÃO FINALÍSSIMA COM A FREQUÊNCIA CORRETA
 
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
@@ -6,8 +6,9 @@ import io from 'socket.io-client';
 // O endereço do nosso cérebro soberano.
 const ENDERECO_SERVIDOR = "https://sosplanet-backend.onrender.com";
 
-// Conectando ao nosso servidor.
-const socket = io(ENDERECO_SERVIDOR);
+// --- A MUDANÇA CRUCIAL ---
+// Agora estamos sintonizando a frequência secreta "/utopia"
+const socket = io(`${ENDERECO_SERVIDOR}/utopia`);
 
 const UtopiaRoom: React.FC = () => {
   const [nomeUsuario, setNomeUsuario] = useState('Anônimo');
@@ -16,25 +17,22 @@ const UtopiaRoom: React.FC = () => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Pega o nome do membro do link (ex: ...?membro=Nexus)
     const urlParams = new URLSearchParams(window.location.search);
     const membroNome = urlParams.get('membro');
     if (membroNome) {
       setNomeUsuario(membroNome);
     }
     
-    // Ouve por novas mensagens do servidor
+    // Ouve por novas mensagens do servidor NA FREQUÊNCIA CERTA
     socket.on('utopia_message', (novaMensagem) => {
       setHistoricoChat((historicoAnterior) => [...historicoAnterior, novaMensagem]);
     });
 
-    // Limpeza ao sair da página
     return () => {
       socket.off('utopia_message');
     };
   }, []);
 
-  // Faz a barra de rolagem descer automaticamente
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -43,7 +41,7 @@ const UtopiaRoom: React.FC = () => {
 
   const enviarMensagem = () => {
     if (mensagem.trim()) {
-      // Envia a mensagem para a sala secreta "utopia"
+      // Envia a mensagem para a sala secreta "utopia" NA FREQUÊNCIA CERTA
       socket.emit('utopia_message', { autor: nomeUsuario, mensagem });
       setMensagem('');
     }
