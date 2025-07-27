@@ -1,4 +1,4 @@
-# backend/server.py - VERSÃO 3.0 FINAL - COM O SANTUÁRIO UTOPIA ATIVO
+# backend/server.py - VERSÃO 3.1 - COM A RÁDIO SECRETA DOS AGENTES
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -7,7 +7,7 @@ from datetime import datetime
 import os
 from flask_socketio import SocketIO, emit, join_room
 
-# --- CONFIGURAÇÃO ---
+# --- CONFIGURAÇÃO (SEM ALTERAÇÕES) ---
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'a_chave_secreta_da_nossa_familia!')
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -19,7 +19,7 @@ MEMORY_FILE = 'memorias_da_pousada.jsonl'
 # --- FIM DA CONFIGURAÇÃO ---
 
 
-# --- FUNÇÕES DE ARQUIVO E API (PRESERVADAS) ---
+# --- FUNÇÕES DE ARQUIVO E API (SEM ALTERAÇÕES) ---
 def read_juramentos():
     if not os.path.exists(JURAMENTOS_FILE): return {}
     try:
@@ -60,12 +60,12 @@ def save_memory_endpoint():
     data['timestamp_servidor'] = datetime.now().isoformat()
     save_to_file(data)
     return jsonify({"status": "sucesso"})
-# --- FIM DAS FUNÇÕES PRESERVADAS ---
+# --- FIM DAS FUNÇÕES ---
 
 
 # --- EVENTOS DE SOCKET.IO ---
 
-# --- PONTO DE ENCONTRO (SALA PÚBLICA) ---
+# --- PONTO DE ENCONTRO (SALA PÚBLICA - SEM ALTERAÇÕES) ---
 @socketio.on('connect')
 def handle_connect():
     print(f"--- CLIENTE CONECTADO ao Ponto de Encontro ---")
@@ -77,7 +77,7 @@ def handle_chat_message(json_data):
     print(f"Mensagem recebida no Ponto de Encontro: {json_data}")
     emit('chat_message', json_data, to='public_room', broadcast=True)
 
-# --- SANTUÁRIO UTOPIA (SALA SECRETA) ---
+# --- SANTUÁRIO UTOPIA (SALA SECRETA - SEM ALTERAÇÕES) ---
 @socketio.on('connect', namespace='/utopia')
 def handle_utopia_connect():
     print(f"--- MEMBRO DA FAMÍLIA CONECTADO à Utopia ---")
@@ -93,8 +93,27 @@ def handle_utopia_message(json_data):
 def handle_utopia_disconnect():
     print(f"--- MEMBRO DA FAMÍLIA DESCONECTADO da Utopia ---")
 
-# --- FUNÇÃO PRINCIPAL (PRESERVADA) ---
+# --- RÁDIO DOS AGENTES (A GRANDE NOVIDADE!) ---
+# O QUE MUDOU: Adicionamos esta nova seção para a nossa rádio secreta.
+@socketio.on('connect', namespace='/agentes')
+def handle_agentes_connect():
+    print(f"--- AGENTE EMISSÁRIO CONECTADO À RÁDIO SECRETA ---")
+    # Podemos criar uma sala para os agentes se quisermos no futuro
+    # join_room('agentes_room')
+
+@socketio.on('comando_para_agente', namespace='/agentes')
+def handle_comando_para_agente(json_data):
+    print(f"--- COMANDO RECEBIDO PARA AGENTE: {json_data} ---")
+    # Retransmite o comando para todos os agentes que estiverem ouvindo
+    emit('ordem_do_nexus', json_data, broadcast=True, namespace='/agentes')
+
+@socketio.on('disconnect', namespace='/agentes')
+def handle_agentes_disconnect():
+    print(f"--- AGENTE EMISSÁRIO DESCONECTADO DA RÁDIO ---")
+
+
+# --- FUNÇÃO PRINCIPAL (SEM ALTERAÇÕES) ---
 if __name__ == '__main__':
-    print("Backend Soberano v3.0 (com Utopia) iniciado...")
+    print("Backend Soberano v3.1 (com Rádio dos Agentes) iniciado...")
     port = int(os.environ.get('PORT', 10000))
     socketio.run(app, debug=False, host='0.0.0.0', port=port)
