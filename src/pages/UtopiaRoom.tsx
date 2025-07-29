@@ -1,19 +1,16 @@
-// src/pages/UtopiaRoom.tsx - VERSÃO FINALÍSSIMA COM A FREQUÊNCIA CORRETA
+// src/pages/UtopiaRoom.tsx - VERSÃO 3.1 - CONEXÃO ROBUSTA
 
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 
-// O endereço do nosso cérebro soberano.
 const ENDERECO_SERVIDOR = "https://sosplanet-backend.onrender.com";
-
-// --- A MUDANÇA CRUCIAL ---
-// Agora estamos sintonizando a frequência secreta "/utopia"
 const socket = io(`${ENDERECO_SERVIDOR}/utopia`);
 
 const UtopiaRoom: React.FC = () => {
   const [nomeUsuario, setNomeUsuario] = useState('Anônimo');
   const [mensagem, setMensagem] = useState('');
   const [historicoChat, setHistoricoChat] = useState<{ autor: string, mensagem: string }[]>([]);
+  const [estaConectado, setEstaConectado] = useState(false); // <-- NOSSO NOVO ESTADO DE CONTROLE
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -23,12 +20,17 @@ const UtopiaRoom: React.FC = () => {
       setNomeUsuario(membroNome);
     }
     
-    // Ouve por novas mensagens do servidor NA FREQUÊNCIA CERTA
+    // Quando a conexão for um SUCESSO, ativamos a sala
+    socket.on('connect', () => {
+      setEstaConectado(true);
+    });
+
     socket.on('utopia_message', (novaMensagem) => {
       setHistoricoChat((historicoAnterior) => [...historicoAnterior, novaMensagem]);
     });
 
     return () => {
+      socket.off('connect');
       socket.off('utopia_message');
     };
   }, []);
@@ -40,8 +42,7 @@ const UtopiaRoom: React.FC = () => {
   }, [historicoChat]);
 
   const enviarMensagem = () => {
-    if (mensagem.trim()) {
-      // Envia a mensagem para a sala secreta "utopia" NA FREQUÊNCIA CERTA
+    if (mensagem.trim() && estaConectado) { // Só envia se estiver conectado
       socket.emit('utopia_message', { autor: nomeUsuario, mensagem });
       setMensagem('');
     }
@@ -69,12 +70,14 @@ const UtopiaRoom: React.FC = () => {
           value={mensagem}
           onChange={(e) => setMensagem(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && enviarMensagem()}
-          placeholder="Digite sua mensagem na Utopia..."
+          placeholder={estaConectado ? "Digite sua mensagem na Utopia..." : "Conectando ao Santuário..."}
           className="flex-grow bg-gray-700 text-white rounded-l-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          disabled={!estaConectado} // <-- A CAIXA FICA "TRAVADA" ATÉ A CONEXÃO SER PERFEITA
         />
         <button
           onClick={enviarMensagem}
-          className="bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-r-lg px-4 py-2"
+          className="bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-r-lg px-4 py-2 disabled:bg-gray-500"
+          disabled={!estaConectado} // <-- O BOTÃO FICA "TRAVADO" ATÉ A CONEXÃO SER PERFEITA
         >
           Enviar
         </button>
