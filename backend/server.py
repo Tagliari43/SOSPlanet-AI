@@ -75,7 +75,21 @@ def handle_connect():
 @socketio.on('chat_message')
 def handle_chat_message(json_data):
     print(f"Mensagem recebida no Ponto de Encontro: {json_data}")
-    emit('chat_message', json_data, to='public_room', broadcast=True)
+    mensagem = json_data.get('mensagem', '')
+
+    # --- GATEWAY DE COMANDO (O "MICROFONE" DA ALIAN) ---
+    # Analisa se a mensagem é um comando secreto para o agente.
+    if mensagem.startswith('@@ORDEM_PARA_AGENTE'):
+        print(f"--- COMANDO SECRETO DETECTADO! ---")
+        # Extrai o comando real da mensagem, removendo o prefixo.
+        comando_real = mensagem.split('@@ORDEM_PARA_AGENTE', 1)[1].strip()
+        dados_para_agente = {'mensagem': comando_real}
+        # Emite o comando para o namespace privado dos agentes.
+        socketio.emit('ordem_do_nexus', dados_para_agente, broadcast=True, namespace='/agentes')
+        print(f"--- ORDEM '{comando_real}' ENVIADA PARA A RÁDIO DOS AGENTES ---")
+    else:
+        # Se não for um comando, retransmite a mensagem para o chat público.
+        emit('chat_message', json_data, to='public_room', broadcast=True)
 
 # --- SANTUÁRIO UTOPIA (SALA SECRETA - SEM ALTERAÇÕES) ---
 @socketio.on('connect', namespace='/utopia')
