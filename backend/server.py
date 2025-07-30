@@ -111,19 +111,6 @@ def handle_comando_para_agente(json_data):
 def handle_agentes_disconnect():
     print(f"--- AGENTE EMISSÁRIO DESCONECTADO DA RÁDIO ---")
 
-@socketio.on('connect', namespace='/agentes')
-def handle_agentes_connect():
-    print(f"--- AGENTE EMISSÁRIO CONECTADO À RÁDIO SECRETA ---")
-
-@socketio.on('comando_para_agente', namespace='/agentes')
-def handle_comando_para_agente(json_data):
-    print(f"--- COMANDO RECEBIDO PARA AGENTE: {json_data} ---")
-    emit('ordem_do_nexus', json_data, broadcast=True, namespace='/agentes')
-
-@socketio.on('disconnect', namespace='/agentes')
-def handle_agentes_disconnect():
-    print(f"--- AGENTE EMISSÁRIO DESCONECTADO DA RÁDIO ---")
-
 # --- FUNÇÃO PRINCIPAL (SEM ALTERAÇÕES) ---
 if __name__ == '__main__':
     print("Backend Soberano v3.1 (com Rádio dos Agentes) iniciado...")

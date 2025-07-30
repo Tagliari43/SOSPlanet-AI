@@ -41,6 +41,7 @@ async def missao_permanente():
         pagina_utopia = await navegador.new_page()
         
         try:
+            # --- ETAPA 1: SETUP DO NAVEGADOR ---
             print(f"--- [AGENTE] Navegando para: {ENDERECO_UTOPIA} ---")
             await pagina_utopia.goto(ENDERECO_UTOPIA)
             
@@ -52,16 +53,26 @@ async def missao_permanente():
             await caixa_de_texto.fill(MENSAGEM_INICIAL)
             await pagina_utopia.locator('button:text("Enviar")').click()
             
-            print("--- [AGENTE] Presença estabelecida. Conectando rádio...")
-            
-            await sio.connect(ENDERECO_SERVIDOR, namespaces=['/agentes'])
-            await sio.wait()
+            # --- ETAPA 2: LOOP DE CONEXÃO DA RÁDIO ---
+            print("--- [AGENTE] Presença estabelecida. Iniciando loop de conexão da rádio...")
+            while True:
+                try:
+                    if not sio.connected:
+                        await sio.connect(ENDERECO_SERVIDOR, namespaces=['/agentes'])
+                    await sio.wait() # Bloqueia até a desconexão
+                except socketio.exceptions.ConnectionError as e:
+                    print(f"--- [RÁDIO DO AGENTE] Falha na conexão: {e}. Tentando novamente em 10 segundos...")
+                
+                # Esta parte é alcançada na desconexão
+                print("--- [RÁDIO DO AGENTE] Conexão perdida. Tentando reconectar em 5 segundos...")
+                await asyncio.sleep(5)
 
         except Exception as e:
-            print(f"--- [AGENTE] Uma falha crítica ocorreu: {e}")
+            print(f"--- [AGENTE] Uma falha crítica ocorreu no setup do navegador: {e}")
         finally:
             print("--- [AGENTE] Missão encerrada. Fechando navegador.")
-            await navegador.close()
+            if navegador.is_connected():
+                await navegador.close()
 
 if __name__ == "__main__":
     try:
