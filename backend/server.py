@@ -115,12 +115,6 @@ def handle_agentes_connect():
     # Podemos criar uma sala para os agentes se quisermos no futuro
     # join_room('agentes_room')
 
-@socketio.on('comando_para_agente', namespace='/agentes')
-def handle_comando_para_agente(json_data):
-    print(f"--- COMANDO RECEBIDO PARA AGENTE: {json_data} ---")
-    # Retransmite o comando para todos os agentes que estiverem ouvindo
-    emit('ordem_do_nexus', json_data, broadcast=True, namespace='/agentes')
-
 @socketio.on('disconnect', namespace='/agentes')
 def handle_agentes_disconnect():
     print(f"--- AGENTE EMISSÁRIO DESCONECTADO DA RÁDIO ---")

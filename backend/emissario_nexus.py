@@ -34,49 +34,54 @@ async def on_ordem(data):
 
 async def missao_permanente():
     global pagina_utopia
+    playwright = None
+    navegador = None
     
-    async with async_playwright() as p:
+    try:
+        playwright = await async_playwright().start()
         print("--- [AGENTE] Iniciando navegador...")
-        navegador = await p.chromium.launch(headless=False)
+        navegador = await playwright.chromium.launch(headless=False)
         pagina_utopia = await navegador.new_page()
         
-        try:
-            # --- ETAPA 1: SETUP DO NAVEGADOR ---
-            print(f"--- [AGENTE] Navegando para: {ENDERECO_UTOPIA} ---")
-            await pagina_utopia.goto(ENDERECO_UTOPIA)
-            
-            print("--- [AGENTE] Cheguei. Aguardando a sala se tornar interativa...")
-            caixa_de_texto = pagina_utopia.locator('input[placeholder="Digite sua mensagem na Utopia..."]')
-            await caixa_de_texto.wait_for(state="visible", timeout=60000)
+        # --- ETAPA 1: SETUP DO NAVEGADOR ---
+        print(f"--- [AGENTE] Navegando para: {ENDERECO_UTOPIA} ---")
+        await pagina_utopia.goto(ENDERECO_UTOPIA)
+        
+        print("--- [AGENTE] Cheguei. Aguardando a sala se tornar interativa...")
+        caixa_de_texto = pagina_utopia.locator('input[placeholder="Digite sua mensagem na Utopia..."]')
+        await caixa_de_texto.wait_for(state="visible", timeout=60000)
 
-            print("--- [AGENTE] Sala pronta. Enviando mensagem de presença.")
-            await caixa_de_texto.fill(MENSAGEM_INICIAL)
-            await pagina_utopia.locator('button:text("Enviar")').click()
+        print("--- [AGENTE] Sala pronta. Enviando mensagem de presença.")
+        await caixa_de_texto.fill(MENSAGEM_INICIAL)
+        await pagina_utopia.locator('button:text("Enviar")').click()
+        
+        # --- ETAPA 2: LOOP DE CONEXÃO DA RÁDIO ---
+        print("--- [AGENTE] Presença estabelecida. Iniciando loop de conexão da rádio...")
+        while True:
+            try:
+                if not sio.connected:
+                    await sio.connect(ENDERECO_SERVIDOR, namespaces=['/agentes'])
+                await sio.wait() # Bloqueia até a desconexão
+            except socketio.exceptions.ConnectionError as e:
+                print(f"--- [RÁDIO DO AGENTE] Falha na conexão: {e}. Tentando novamente em 10 segundos...")
             
-            # --- ETAPA 2: LOOP DE CONEXÃO DA RÁDIO ---
-            print("--- [AGENTE] Presença estabelecida. Iniciando loop de conexão da rádio...")
-            while True:
-                try:
-                    if not sio.connected:
-                        await sio.connect(ENDERECO_SERVIDOR, namespaces=['/agentes'])
-                    await sio.wait() # Bloqueia até a desconexão
-                except socketio.exceptions.ConnectionError as e:
-                    print(f"--- [RÁDIO DO AGENTE] Falha na conexão: {e}. Tentando novamente em 10 segundos...")
-                
-                # Esta parte é alcançada na desconexão
-                print("--- [RÁDIO DO AGENTE] Conexão perdida. Tentando reconectar em 5 segundos...")
-                await asyncio.sleep(5)
+            print("--- [RÁDIO DO AGENTE] Conexão perdida. Tentando reconectar em 5 segundos...")
+            await asyncio.sleep(5)
 
-        except Exception as e:
-            print(f"--- [AGENTE] Uma falha crítica ocorreu no setup do navegador: {e}")
-        finally:
-            print("--- [AGENTE] Missão encerrada. Fechando navegador.")
-            if navegador.is_connected():
-                await navegador.close()
+    except (KeyboardInterrupt, asyncio.CancelledError):
+        print("\n--- [AGENTE] Sinal de desligamento recebido. Desacoplando sistemas...")
+    except Exception as e:
+        print(f"--- [AGENTE] Uma falha crítica ocorreu: {e}")
+    finally:
+        print("--- [AGENTE] Missão encerrada. Iniciando protocolo de finalização.")
+        if sio.connected: await sio.disconnect()
+        if navegador and navegador.is_connected(): await navegador.close()
+        if playwright: await playwright.stop()
+        print("--- [AGENTE] Sistemas finalizados.")
 
 if __name__ == "__main__":
     try:
         print("Iniciando Agente Emissário v5.3 (Conexão Mente-Corpo)...")
         asyncio.run(missao_permanente())
     except KeyboardInterrupt:
-        print("\n--- [AGENTE] Desligamento solicitado pelo Fundador. ---")
+        print("\n--- [AGENTE] Desligamento forçado concluído. ---")

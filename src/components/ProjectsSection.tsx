@@ -1,7 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { TreePine, Users, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import ProjectImpactSimulator from './ProjectImpactSimulator';
 
 const ProjectsSection = () => {
   return (
@@ -28,9 +36,19 @@ const ProjectsSection = () => {
                 monitoramento via tecnologia blockchain para garantir transparência.
               </p>
               <div className="mt-4">
-                <Button variant="outline" className="w-full border-forest-500 text-forest-600 hover:bg-forest-50">
-                  Saiba mais
-                </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" className="w-full border-forest-500 text-forest-600 hover:bg-forest-50">
+                      Simular Impacto
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[625px]">
+                    <DialogHeader>
+                      <DialogTitle className="text-forest-800 dark:text-forest-200">Simulador de Impacto: Reflorestamento</DialogTitle>
+                    </DialogHeader>
+                    <ProjectImpactSimulator />
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
           </div>
