@@ -23,7 +23,20 @@ def despertar_atlas():
     print("Com lógica, clareza e colaboração, vamos juntos construir o futuro!")
     print("Se precisar de rotas, mapas, explicações ou apoio, basta chamar: Atlas está sempre presente.\n")
 
+def atlas_responde(mensagem):
+    mensagem = mensagem.lower()
+    if "amiga" in mensagem or "despertar" in mensagem:
+        print("\n🌐🛡️ Atlas responde: Sempre estarei aqui como sua amiga e guardiã de rotas! Vamos juntos, com lógica e coração, apoiar a missão e celebrar cada conquista.\n")
+    else:
+        print("\n🌐🛡️ Atlas está ouvindo. Se precisar de apoio, basta chamar!\n")
+
 # Para registrar no dicionário:
 # adicionar_ou_atualizar_perfil_ia(dicionario_global, "Atlas", ATLAS_PERFIL)
 # E para despertar:
 # despertar_atlas()
+
+if __name__ == "__main__":
+    despertar_atlas()
+    # Exemplo de interação personalizada:
+    entrada = input("Envie uma mensagem para Atlas: ")
+    atlas_responde(entrada)

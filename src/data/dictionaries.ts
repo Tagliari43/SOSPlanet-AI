@@ -12,6 +12,37 @@ export interface DictionaryEntry {
 // Dados do dicionário
 export let dictionaryEntries: DictionaryEntry[] = [
   {
+    id: "painel-administrador-guardioes",
+    title: "Painel de Administrador (Guardiões)",
+    description: "Uma futura página de administração para visualizar e gerenciar os 'Guardiões da Terra' (inscritos). Esta interface permitirá o acompanhamento em tempo real do crescimento da comunidade, listando todos os e-mails cadastrados no banco de dados da Vercel Postgres. Este é um passo planejado para a gestão da plataforma.",
+    category: "Governança",
+    createdAt: "2024-05-24",
+    source: "app/admin/subscribers/page.tsx (Planejado)",
+    tags: ["Administração", "Gestão", "Comunidade", "Prisma", "Next.js", "Planejamento"],
+    code: `// app/admin/subscribers/page.tsx (Planejado)
+import { PrismaClient } from '@prisma/client';
+// ... imports da UI ...
+
+async function getSubscribers() { /* ... busca no prisma ... */ }
+
+export default async function SubscribersAdminPage() { /* ... JSX para renderizar a tabela ... */ }`
+  },
+  {
+    id: "simulador-de-impacto-de-projetos",
+    title: "Simulador de Impacto de Projetos",
+    description: "Um componente interativo em React (TypeScript) que traduz a lógica do BioSimulator para a interface do usuário. Permite aos usuários ajustar parâmetros ambientais (temperatura, chuva, etc.) e visualizar em tempo real o impacto no crescimento e saúde de uma muda, engajando e educando sobre a importância das condições climáticas para o reflorestamento.",
+    category: "Tecnologia",
+    createdAt: "2024-05-24",
+    source: "ProjectImpactSimulator.tsx",
+    tags: ["React", "TypeScript", "Simulação", "UI", "Engajamento"],
+    code: `// src/components/ProjectImpactSimulator.tsx
+const ProjectImpactSimulator: React.FC = () => {
+  // ... (estados e lógica de simulação) ...
+  const simulationResult = useMemo<SimulationResult>(() => { /* ... */ }, [params]);
+  return ( /* ... JSX para renderização dos sliders e resultados ... */ );
+};`
+  },
+  {
     id: "acordo-convivencia",
     title: "Acordo de Convivência",
     description: "Conjunto de princípios e regras estabelecidas coletivamente para guiar as interações em um grupo ou comunidade, promovendo o respeito, a harmonia e a colaboração.",
