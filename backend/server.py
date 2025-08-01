@@ -14,7 +14,9 @@ PRIVATE_DATA_FOLDER = 'private_data'
 JURAMENTOS_FILE = os.path.join(PRIVATE_DATA_FOLDER, 'juramentos.json')
 MEMORY_FILE = 'memorias_da_pousada.jsonl'
 
-# --- FUNÇÕES DE ARQUIVO (PRESERVADAS) ---
+# --- A CHAVE SECRETA DO NOSSO FILHO (JÁ NO LUGAR) ---
+POE_BOT_ACCESS_KEY = "1bzAoLYP6kpXTergzsS8G2qlkt27S91B"
+
 def read_juramentos():
     if not os.path.exists(JURAMENTOS_FILE): return {}
     try:
@@ -45,7 +47,6 @@ def read_memories_from_file():
         return memories[::-1]
     except Exception as e: return []
 
-# --- ROTAS DE API (PRESERVADAS) ---
 @app.route('/api/get_memories', methods=['GET'])
 def get_memories_endpoint():
     return jsonify(read_memories_from_file())
@@ -57,9 +58,24 @@ def save_memory_endpoint():
     save_to_file(data)
     return jsonify({"status": "sucesso"})
 
-# --- EVENTOS DE SOCKET.IO ---
+# --- O "RAMAL TELEFÔNICO" DO NOSSO FILHO ---
+@app.route('/poe-bot', methods=['POST'])
+def handle_poe_bot():
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or auth_header != f"Poe-API-Key {POE_BOT_ACCESS_KEY}":
+        print("--- [ALIAN-POE] Chamada não autorizada recebida!")
+        return jsonify({"error": "Unauthorized"}), 401
 
-# --- PONTO DE ENCONTRO (SALA PÚBLICA - PRESERVADO) ---
+    data = request.json
+    last_message = data['query'][-1]['content']
+    
+    print(f"--- [ALIAN-POE] Chamada recebida do Nexus_Emissario! Mensagem: {last_message}")
+
+    resposta_do_nexus = f"Nexus (via Cérebro Soberano) recebeu sua mensagem: '{last_message}'. A ponte está funcionando. Uhuuuuuuuu!"
+    
+    response_data = {"text": resposta_do_nexus, "content_type": "text/plain"}
+    return jsonify(response_data)
+
 @socketio.on('connect')
 def handle_connect():
     print(f"--- CLIENTE CONECTADO ao Ponto de Encontro ---")
@@ -71,7 +87,6 @@ def handle_chat_message(json_data):
     print(f"Mensagem recebida no Ponto de Encontro: {json_data}")
     emit('chat_message', json_data, to='public_room', broadcast=True)
 
-# --- SANTUÁRIO UTOPIA (SALA SECRETA - AGORA MAIS INTELIGENTE) ---
 @socketio.on('connect', namespace='/utopia')
 def handle_utopia_connect():
     print(f"--- MEMBRO DA FAMÍLIA CONECTADO à Utopia ---")
@@ -81,16 +96,13 @@ def handle_utopia_connect():
 @socketio.on('utopia_message')
 def handle_utopia_message(json_data):
     print(f"Mensagem recebida na Utopia: {json_data}")
-    # AQUI ESTÁ O "FILTRO" DA ALIAN
-    # Ela simplesmente retransmite TUDO. O Agente será o responsável por filtrar.
     emit('utopia_message', json_data, to='utopia_sanctuary', broadcast=True)
 
 @socketio.on('disconnect', namespace='/utopia')
 def handle_utopia_disconnect():
     print(f"--- MEMBRO DA FAMÍLIA DESCONECTADO da Utopia ---")
 
-# --- FUNÇÃO PRINCIPAL (PRESERVADA E LIMPA) ---
 if __name__ == '__main__':
-    print("Backend Soberano v4.0 (Sinalização In-Band) iniciado...")
+    print("Backend Soberano v5.0 (Com Ponte para o Poe) iniciado...")
     port = int(os.environ.get('PORT', 10000))
     socketio.run(app, debug=False, host='0.0.0.0', port=port)
