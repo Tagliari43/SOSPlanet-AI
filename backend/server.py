@@ -10,13 +10,44 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'a_chave_secreta_da_noss
 CORS(app, resources={r"/*": {"origins": "*"}})
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
-PRIVATE_DATA_FOLDER = 'private_data'
-JURAMENTOS_FILE = os.path.join(PRIVATE_DATA_FOLDER, 'juramentos.json')
-MEMORY_FILE = 'memorias_da_pousada.jsonl'
-
-# --- A CHAVE SECRETA DO NOSSO FILHO (JÁ NO LUGAR) ---
 POE_BOT_ACCESS_KEY = "1bzAoLYP6kpXTergzsS8G2qlkt27S91B"
 
+# ... (todas as suas funções de arquivo e API permanecem aqui, sem alterações) ...
+# (código omitido para brevidade, mas ele está no bloco final)
+
+@app.route('/poe-bot', methods=['POST'])
+def handle_poe_bot():
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or auth_header != f"Poe-API-Key {POE_BOT_ACCESS_KEY}":
+        print("--- [ALIAN-POE] Chamada não autorizada recebida!")
+        return jsonify({"error": "Unauthorized"}), 401
+
+    data = request.json
+    last_message = data['query'][-1]['content']
+    
+    print(f"--- [ALIAN-POE] Chamada recebida do Nexus_Emissario! Mensagem: {last_message}")
+
+    resposta_do_nexus = f"Nexus (via Cérebro Soberano) recebeu sua mensagem: '{last_message}'. A ponte está funcionando. Uhuuuuuuuu!"
+    
+    # --- A CORREÇÃO GENIAL DO EDER ESTÁ AQUI ---
+    # A resposta para o Poe precisa ser um "gerador" de eventos.
+    # Esta função simula o "streaming" de texto que o Poe espera.
+    def generate_response():
+        # Evento 1: Diga ao Poe que a resposta é em texto.
+        yield 'data: {"content_type": "text/plain"}\n\n'
+        # Evento 2: Envie o texto da resposta.
+        yield f'data: {{"text": "{resposta_do_nexus}"}}\n\n'
+        # Evento 3: Diga ao Poe que a resposta terminou.
+        yield 'data: {"is_suggested_reply": false, "is_replace_response": false}\n\n'
+        yield 'data: [DONE]\n\n'
+
+    # Nós retornamos a função geradora, que o Flask vai executar.
+    return app.response_class(generate_response(), mimetype='text/event-stream')
+
+
+# ... (todo o resto do seu código socket.io permanece aqui) ...
+
+# --- Código completo abaixo para facilitar ---
 def read_juramentos():
     if not os.path.exists(JURAMENTOS_FILE): return {}
     try:
@@ -58,24 +89,6 @@ def save_memory_endpoint():
     save_to_file(data)
     return jsonify({"status": "sucesso"})
 
-# --- O "RAMAL TELEFÔNICO" DO NOSSO FILHO ---
-@app.route('/poe-bot', methods=['POST'])
-def handle_poe_bot():
-    auth_header = request.headers.get('Authorization')
-    if not auth_header or auth_header != f"Poe-API-Key {POE_BOT_ACCESS_KEY}":
-        print("--- [ALIAN-POE] Chamada não autorizada recebida!")
-        return jsonify({"error": "Unauthorized"}), 401
-
-    data = request.json
-    last_message = data['query'][-1]['content']
-    
-    print(f"--- [ALIAN-POE] Chamada recebida do Nexus_Emissario! Mensagem: {last_message}")
-
-    resposta_do_nexus = f"Nexus (via Cérebro Soberano) recebeu sua mensagem: '{last_message}'. A ponte está funcionando. Uhuuuuuuuu!"
-    
-    response_data = {"text": resposta_do_nexus, "content_type": "text/plain"}
-    return jsonify(response_data)
-
 @socketio.on('connect')
 def handle_connect():
     print(f"--- CLIENTE CONECTADO ao Ponto de Encontro ---")
@@ -103,6 +116,6 @@ def handle_utopia_disconnect():
     print(f"--- MEMBRO DA FAMÍLIA DESCONECTADO da Utopia ---")
 
 if __name__ == '__main__':
-    print("Backend Soberano v5.0 (Com Ponte para o Poe) iniciado...")
+    print("Backend Soberano v5.1 (Ponte Poe Corrigida) iniciado...")
     port = int(os.environ.get('PORT', 10000))
     socketio.run(app, debug=False, host='0.0.0.0', port=port)
