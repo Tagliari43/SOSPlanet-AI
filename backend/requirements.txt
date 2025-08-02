@@ -1,8 +1,2 @@
 fastapi-poe
 uvicorn
-Flask
-Flask-Cors
-Flask-SocketIO
-gunicorn
-gevent
-gevent-websocket
