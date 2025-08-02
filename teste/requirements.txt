@@ -1,5 +1,3 @@
-fastapi-poe
-uvicorn
 Flask
 Flask-Cors
 Flask-SocketIO
