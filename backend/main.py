@@ -16,10 +16,13 @@ class NexusEmissarioBot(fp.PoeBot):
         print(f"--- [CÉREBRO SOBERANO] Ocorreu um erro: {error}")
         yield fp.ErrorResponse(text="Desculpe, ocorreu um erro interno.")
 
-# A biblioteca cria o servidor para nós.
-bot = NexusEmissarioBot(api_key=POE_API_KEY)
-app = fp.make_app(bot)
+# --- Ponto de entrada usado pelo Render ---
+def get_app():
+    bot = NexusEmissarioBot(api_key=POE_API_KEY)
+    return fp.make_app(bot)
 
-# --- Execução local (não será usada no Render, mas é bom ter) ---
+app = get_app()
+
+# --- Execução local apenas ---
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=10000)
