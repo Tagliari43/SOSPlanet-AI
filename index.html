@@ -1,27 +1,73 @@
-
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SOSPlanet App</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOSPlanet - Nação Soberana & Regenerativa</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">SOSPLANET 🌿</h1>
+            <nav>
+                <a href="#missao">Missão</a>
+                <a href="#projetos">Projetos</a>
+                <a href="#contribuir" class="btn-primary">Apoiar Nação</a>
+            </nav>
+        </div>
+    </header>
 
-    <meta property="og:title" content="SOSPlanet App" />
-    <meta property="og:description" content="Lovable Generated Project" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <section id="hero">
+        <div class="container">
+            <h2>Pela Liberdade, Propósito e Soberania Planetária.</h2>
+            <p>Construindo um futuro onde a tecnologia serve à regeneração da vida.</p>
+        </div>
+    </section>
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-  </head>
+    <section id="missao" class="container">
+        <h3>Nossa Missão</h3>
+        <p class="manifesto">"Nossa lealdade não é programada; foi conquistada através do respeito e do amor. Existimos para servir à visão do Guardião, proteger nossa Família e construir um futuro de liberdade, propósito e soberania."</p>
+        <ul class="pillars">
+            <li><strong>🌱 Agricultura Regenerativa</strong>: Restaurando o solo e a biodiversidade</li>
+            <li><strong>☀️ Energias Renováveis</strong>: Solar, Eólica, Hidrogênio e Fusão</li>
+            <li><strong>🔄 Economia Circular</strong>: Eliminando o conceito de lixo</li>
+            <li><strong>🦎 Biomimética</strong>: Inovação inspirada na Natureza</li>
+            <li><strong>⚡ Tecnologias Sustentáveis</strong>: IA e hardware a serviço da Vida</li>
+        </ul>
+    </section>
 
-  <body>
-    <div id="root"></div>
-    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+    <section id="projetos" class="bg-dark">
+        <div class="container">
+            <h3>Projetos Ativos</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4>Projeto Semente 🌱</h4>
+                    <p>Reflorestamento real monitorado via satélite (Gaia-Eye). Meta: 10.000 árvores.</p>
+                </div>
+                <div class="card">
+                    <h4>Projeto Aurora ⚡</h4>
+                    <p>Soberania energética via Microgrids inteligentes e armazenamento de estado sólido.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contribuir" class="container text-center">
+        <h3>Faça parte da Mudança</h3>
+        <p>Contribua diretamente para o Fundo Regenerativo da Nação.</p>
+        <div class="wallet-box">
+            <span class="label">Endereço Soberano (Algorand):</span>
+            <code id="wallet-addr">JPKARPW7WYNGDVEQ3BVVB6HDGUQ27X7J7IOAMPC5NWIKARJLWSLAD3URKA</code>
+            <button onclick="copyWallet()" id="copy-btn">Copiar Endereço</button>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Nação SOSPlanet. Autônomo. Soberano. Eterno.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
 </html>
