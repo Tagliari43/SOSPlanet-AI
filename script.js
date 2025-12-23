@@ -5,8 +5,7 @@ async function updateProjectStatus() {
         const data = await response.json();
         
         const arrecadado = data.arrecadado;
-        const meta = data.meta;
-        const percent = Math.min((arrecadado / meta) * 100, 100).toFixed(1);
+        const percent = data.percentual;
         
         document.getElementById('sos-arrecadado').innerText = new Intl.NumberFormat('pt-BR').format(arrecadado);
         document.getElementById('sos-percent').innerText = percent + '%';
@@ -31,5 +30,4 @@ function copyWallet() {
     });
 }
 
-// Iniciar sintonização ao carregar
 window.onload = updateProjectStatus;
