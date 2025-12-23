@@ -2,4 +2,46 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ]
+}```
+5.  Clique no botão verde "Confirmar alterações".
+
+**Passo 2: Corrigir o `api/status.ts`**
+
+1.  Volte para a página principal do seu repositório.
+2.  Clique na pasta `api` e depois no arquivo `status.ts`.
+3.  Clique no ícone de lápis (✏️) para editar.
+4.  Apague todo o texto que está lá.
+5.  Agora, cole o código correto, que é o código da função que busca os dados da blockchain. **É este código aqui:**
+
+```typescript
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+
+// Este é um exemplo simplificado. Em um projeto real, use variáveis de ambiente para a URL da API.
+const ALGO_INDEXER_API = 'https://mainnet-idx.algonode.cloud';
+const WALLET_ADDRESS = 'JPKARPW7WYNGDVEQ3BVVB6HDGUQ27X7J7IOAMPC5NWIKARJLWSLAD3URKA';
+const SOS_TOKEN_ID = 735028557;
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  try {
+    const response = await fetch(`${ALGO_INDEXER_API}/v2/accounts/${WALLET_ADDRESS}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch account data: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const assets = data.account.assets || [];
+    const sosAsset = assets.find((asset: any) => asset['asset-id'] === SOS_TOKEN_ID);
+
+    const sosBalance = sosAsset ? sosAsset.amount / 1000000 : 0; // Ajuste para 6 casas decimais
+    const algoBalance = data.account.amount / 1000000; // Ajuste para 6 casas decimais
+
+    res.status(200).json({
+      sos: sosBalance.toFixed(6),
+      algo: algoBalance.toFixed(6),
+      lastUpdate: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error("Error fetching blockchain data:", error);
+    res.status(500).json({ error: 'Failed to retrieve data from blockchain' });
+  }
 }
